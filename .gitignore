@@ -1,0 +1,38 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+#database
+database
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Output of 'npm pack'
+*.tgz
+
+#joe backup files
+*~
+DEADJOE
+
+#session directecory
+sessions/
+
+#build directory
+build/
+
+#package lock
+package-lock.json
+
+#environmnet file
+.env
