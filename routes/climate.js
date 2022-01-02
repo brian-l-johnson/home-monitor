@@ -40,7 +40,6 @@ var Sensor = require('../models/Sensor');
  */
 
 router.get('/sensors', function(req,res,next) {
-    console.log("in get");
     Sensor.find({}, (err,sensors) => {
         if(err) {
             return res.status(500).send({error: "db error"});
@@ -48,6 +47,30 @@ router.get('/sensors', function(req,res,next) {
         return res.send(sensors);
     });
 });
+
+/**
+ * @swagger
+ * /climate/sensors/unassigned:
+ *   get:
+ *     description: return sensors not assigned to a room
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description:  JSON array of all sensors
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/definitions/Sensor'
+ */
+router.get('/sensors/unassigned', function(req,res,next) {
+    Sensor.find({room: null},  (err, sensors) => {
+        if(err) {
+            return res.status(500).send({error: "db error"});
+        }
+        return res.send(sensors);
+    })
+})
 
 /**
  * @swagger

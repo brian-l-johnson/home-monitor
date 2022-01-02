@@ -6,8 +6,6 @@ var logger = require('morgan');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var climateRouter = require('./routes/climate');
 
 var climateMonitor = require('./queue/ClimateMonitor');
@@ -44,7 +42,5 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/climate', climateRouter);
-//app.use('/', indexRouter);
-app.use('/users', usersRouter);
 
 module.exports = app;
