@@ -50,13 +50,21 @@ function startMonitor() {
                     sensor.save();
                     if(sensor.room) {
                         console.log("sensor is assigned to room, will send to influx");
-                        influx.writePoints([
-                            {
-                                measurement: "climate",
-                                tags: { sensor: sensor.room},
-                                fields: {temperature: sensorData['temperature'], humidity: sensorData['humidity'], battery: sensorData['battery']}
-                            }
-                        ])
+                        try {
+                            influx.writePoints([
+                                {
+                                    measurement: "climate",
+                                    tags: { sensor: sensor.room},
+                                    fields: {temperature: sensorData['temperature'], humidity: sensorData['humidity'], battery: sensorData['battery']}
+                                }
+                            ])
+                        }
+                        catch(error) {
+                            console.error("failed to write to influx: ");
+                            console.error(error);
+
+                        }
+
                     }
                     else {
                         console.log("no room assigned to sensor, not logging to influx");

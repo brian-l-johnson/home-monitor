@@ -21,6 +21,10 @@ var Sensor = require('../models/Sensor');
  *         type: float
  *       lastBattery:
  *         type: integer
+ *       highAlert:
+ *         type: float
+ *       lowAlert:
+ *         type: float
  */
 
 /**
@@ -141,6 +145,56 @@ router.put('/sensors/:address/room', function(req,res,next) {
         }
         return res.status(404).send({error: "sensor not found"});
     })
+})
+
+/**
+ * @swagger
+ * /climate/sensors/{sensor}:
+ *   patch:
+ *     description: modify editable fields for sensor
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: sensor
+ *         description: MAC address of a sensor
+ *         in: path
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - name: value
+ *         description: sensor data to update
+ *         in: body
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: sensor
+ *         schema:
+ *           $ref: '#/definitions/Sensor'
+ * 
+ */
+router.patch('/sensors/:address', function(req, res, next) {
+    console.log("in patch");
+    Sensor.findOne({address: req.params.address}, function(err, sensor) {
+        if(err) {
+            return res.status(500).send({error: "db error"});
+        }
+        if(sensor) {
+            if(req.body.room) {
+                sensor.room = req.body.room;
+            }
+            if(req.body.highAlert) {
+                sensor.highAlert = req.body.highAlert;
+            }
+            if(req.body.lowAlert) {
+                sensor.lowAlert = req.body.lowAlert;
+            }
+            sensor.save();
+            return res.send(sensor);
+        }
+        return res.status(404).send({error: "sensor not found"});
+    })
+    console.log(req.body);
 })
 
   
