@@ -9,7 +9,8 @@ var sensorSchema = mongoose.Schema({
     lastHumidity: Number,
     lastBattery: Number,
     highAlert: {type: Number, default: 85},
-    lowAlert: {type: Number, default: 62}
+    lowAlert: {type: Number, default: 62},
+    lastAlert: {type: Date, default: Date.now}
 })
 
 var Sensor = mongoose.model('Sensor', sensorSchema);

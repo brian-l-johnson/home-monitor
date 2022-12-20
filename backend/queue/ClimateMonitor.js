@@ -22,10 +22,17 @@ function startMonitor() {
                 tags: ['sensor']
             }
         ]
-    })
+    });
 
+    const client = mqtt.connect(process.env.MQTT_URL, {username: process.env.MQTT_USER, password: process.env.MQTT_PASS});
 
-    const client = mqtt.connect(process.env.MQTT_URL, {username: process.env.MQTT_USER, password: process.env.MQTT_PASS})
+    const accountSid = process.env.TWILIO_SID; 
+    const authToken = process.env.TWILIO_TOKEN; 
+    const srcNumber = process.env.TWILIO_NUMBER;
+    const alertNumber = process.env.ALERT_NUMBER;
+    
+    const twilio = require('twilio');
+    const twilioClient = new twilio(accountSid, authToken);
 
     client.on('connect', () => {
         console.log("Connected to mqtt broker");
@@ -44,11 +51,36 @@ function startMonitor() {
             else {
                 if(sensor) {
                     console.log("sensor found");
+
                     sensor.lastBattery = sensorData['battery'];
                     sensor.lastTemp = sensorData['temperature'];
                     sensor.lastHumidity = sensorData['humidity'];
                     sensor.save();
                     if(sensor.room) {
+                        if(sensorData['temperature'] < sensor.lowAlert || sensorData['temperature'] > sensor.highAlert) {
+                            console.log("sensor out of range, need to alert");
+                            currTime = Date.now();
+                            alertTime = Date(sensor.lastAlert).getTime();
+                            if(currTime - lastAlert > 1000*60*10) {
+                                messageBody = "Sensor in room: "+sensor.room+" is out of range: "+sensorData['temperature']
+                                twilioClient.messages
+                                    .create({
+                                        body: messageBody,
+                                        to: alertNumber,
+                                        from: srcNumber,
+                                    })
+                                    .then((message) => console.log(message.sid));
+                                sensor.lastAlert = Date.now();
+                            }
+                            else {
+                                console.log("alerted to recently, waiting");
+                            }
+                            
+                            
+                            
+
+                        }
+
                         console.log("sensor is assigned to room, will send to influx");
                         try {
                             influx.writePoints([
