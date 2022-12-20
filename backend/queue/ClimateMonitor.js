@@ -60,8 +60,8 @@ function startMonitor() {
                         if(sensorData['temperature'] < sensor.lowAlert || sensorData['temperature'] > sensor.highAlert) {
                             console.log("sensor out of range, need to alert");
                             currTime = Date.now();
-                            alertTime = Date(sensor.lastAlert).getTime();
-                            if(currTime - lastAlert > 1000*60*10) {
+                            alertTime = Date.parse(sensor.lastAlert);
+                            if(currTime - sensor.lastAlert > 1000*60*10) {
                                 messageBody = "Sensor in room: "+sensor.room+" is out of range: "+sensorData['temperature']
                                 twilioClient.messages
                                     .create({
